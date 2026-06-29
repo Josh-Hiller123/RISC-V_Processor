@@ -1,5 +1,5 @@
 module riscv_PC #(
-parameter IMEM_ADDR_WIDTH = 14
+parameter IMEM_ADDR_WIDTH = 16
 )(
 input logic i_clk,
 input logic i_nrst,
