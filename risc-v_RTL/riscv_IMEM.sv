@@ -1,10 +1,13 @@
-module riscv_IMEM #(parameter IMEM_ADDR_WIDTH = 16)(
-input logic [IMEM_ADDR_WIDTH-1:0] i_pc,
-output logic o_instruct
+module riscv_imem #(
+parameter PC_WIDTH = 32,
+parameter IMEM_ADDR_WIDTH = 16
+parameter INSTRUCT_WIDTH = 32)(
+
+input logic [PC_WIDTH-1:0] i_pc,
+output logic [INSTRUCT_WIDTH-1:0] o_instruct
 ); 
 
-localparam INSTRUCT_WIDTH = 32;
 logic [INSTRUCT_WIDTH-1:] i_mem [(1 << IMEM_ADDR_WIDTH)-1:0];
 
-assign o_instruct = i_mem[i_pc];
+assign o_instruct = i_mem[i_pc[IMEM_ADDR_WIDTH-1:2]];
 endmodule
