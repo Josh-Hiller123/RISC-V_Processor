@@ -10,6 +10,7 @@ output logic [PC_WIDTH-1:0] o_ALUsrcA
 
 localparam SELECT_PC = 1'b0; 
 localparam SELECT_RS1 = 1'b1;
+
 always_comb
 begin
     case (i_ALUsrcA_ctrl)
