@@ -1,10 +1,11 @@
 module riscv_immext #(
-parameter INSTRUCT_WIDTH = 32, 
+parameter INSTRUCT_WIDTH = 32,
+parameter IMM_WIDTH = 32,
 parameter IMMEXT_CTRL = 3
 )(
 input logic [INSTRUCT_WIDTH-1:0] i_instruct, 
 input logic [IMMEXT_CTRL-1:0] i_immext_ctrl,
-output logic [INSTRUCT_WIDTH-1:0] o_immext
+output logic [IMM_WIDTH-1:0] o_immext
 ); 
 
 localparam I_TYPE = 3'b000;

@@ -14,6 +14,7 @@ assign o_instruct = i_mem[i_pc[IMEM_ADDR_WIDTH-1:2]];
 // a faulty jump or branch, PC will round the incorrect value value down to the nearest 
 // valid PC. However, the incorrect value of PC remains incorrect everywhere else,
 // including if it was stored in a register or in memory. All subsequent values of 
-// PC also remain incorrect, but are rounded down. An designated flag will output 
-// high upon detecting this error. 
+// PC also remain incorrect, but are rounded down. This error will be flagged in 
+// simulation if it occurs. Similar method for if func7 doesn't match expected value for 
+// slli, srli, and  srai. 
 endmodule

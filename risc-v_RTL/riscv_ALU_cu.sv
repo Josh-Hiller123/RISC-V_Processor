@@ -32,10 +32,9 @@ localparam SLTU = 4'b1001;
 
 always_comb
 begin
-o_ALUop = 'x;
+    o_ALUop = 'x;
     if(i_ALUcu_ctrl == FORCE_ADD)
     o_ALUop = ADD;
-
     else if(i_ALUcu_ctrl == BRANCH)
     begin
     case(i_func3)
@@ -47,7 +46,6 @@ o_ALUop = 'x;
         3'b111: o_ALUop = SLTU;
     endcase
     end
-    
     else if(i_ALUcu_ctrl == FUNC3_CHECK_R || i_ALUcu_ctrl == FUNC3_CHECK_I)
     begin
     case (i_func3)
@@ -61,7 +59,6 @@ o_ALUop = 'x;
             case(i_func7)
                 7'h00: o_ALUop = ADD;
                 7'h20: o_ALUop = SUB; 
-                default: o_ALUop = 'x;
             endcase
             end
         end

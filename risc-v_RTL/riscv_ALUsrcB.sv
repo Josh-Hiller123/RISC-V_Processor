@@ -21,7 +21,7 @@ begin
     SELECT_RS2: o_ALUsrcB = i_rs2_data; 
     SELECT_FOUR: o_ALUsrcB = FOUR; 
     SELECT_IMMEXT: o_ALUsrcB = i_immext;
-    default o_ALUsrcB = 'x
+    default o_ALUsrcB = 'x;
     endcase
 end 
 endmodule
