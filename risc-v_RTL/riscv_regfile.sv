@@ -28,4 +28,10 @@ assign rd = i_instruct[11:7];
 assign o_rs1_data = reg_mem[rs1];
 assign o_rs2_data = reg_mem[rs2];
 
+always_comb 
+begin
+    if(i_wenable == 1)
+    reg_mem[rd] = i_din;
+end
+
 endmodule

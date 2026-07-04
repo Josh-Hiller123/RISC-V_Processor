@@ -5,10 +5,8 @@ parameter PC_INITIAL = 0
 )(
 input logic i_clk,
 input logic i_nrst,
-
 input logic [PC_WIDTH-1:0] i_pc_add_immext, 
 input logic [PC_WIDTH-1:0] i_rs1_add_immext,
-
 input logic i_dobranch, 
 input logic [JUMPS_CTRL-1:0] i_jumps_ctrl,
 

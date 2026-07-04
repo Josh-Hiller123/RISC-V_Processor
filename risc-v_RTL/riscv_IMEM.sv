@@ -16,5 +16,5 @@ assign o_instruct = i_mem[i_pc[IMEM_ADDR_WIDTH-1:2]];
 // including if it was stored in a register or in memory. All subsequent values of 
 // PC also remain incorrect, but are rounded down. This error will be flagged in 
 // simulation if it occurs. Similar method for if func7 doesn't match expected value for 
-// slli, srli, and  srai. 
+// slli, srli, and  srai. Similar method for sw where bits 1:0 !== 0 or sh where bit 0 !== 0.
 endmodule
