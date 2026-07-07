@@ -1,0 +1,19 @@
+CTRL SIGNALS 
+
+i_ALUcu_ctrl - ALUcu
+
+i_ALUsrc_ctrl - ALUsrc
+
+i_branch_ctrl - brancheval
+
+i_mem_write - dmem
+i_mem_read = dmem
+
+IMMEXT_CTRL - immext
+
+i_jumps_ctrl - pc
+
+i_wenable - regfile
+
+regwrite_mux_ctrl - regwrite_src
+

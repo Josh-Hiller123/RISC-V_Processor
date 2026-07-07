@@ -45,11 +45,13 @@ CHOOSE_WRITE:
         CHOOSE_BYTE1: d_mem[i_ALU[DMEM_ADDR_WIDTH-1:2]][15:8] <= i_sr2[7:0]; 
         CHOOSE_BYTE2: d_mem[i_ALU[DMEM_ADDR_WIDTH-1:2]][23:16] <= i_sr2[7:0]; 
         CHOOSE_BYTE3: d_mem[i_ALU[DMEM_ADDR_WIDTH-1:2]][31:24] <= i_sr2[7:0];
+        default: ;
         endcase
     CHOOSE_SH:
         case(i_ALU[1])
         CHOOSE_HALF0: d_mem[i_ALU[DMEM_ADDR_WIDTH-1:2]][15:0] <= i_sr2[15:0]; 
         CHOOSE_HALF1: d_mem[i_ALU[DMEM_ADDR_WIDTH-1:2]][31:16] <= i_sr2[15:0];
+        default: ;
         endcase
     CHOOSE_SW: d_mem[i_ALU[DMEM_ADDR_WIDTH-1:2]] <= i_sr2;
     default: ;

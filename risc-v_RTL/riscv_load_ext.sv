@@ -33,14 +33,14 @@ logic [15:0] half_loaded;
 
 logic zero_extend;
 
-assign sign_enable = i_func3[FUNC3-1];
+assign zero_extend = i_func3[FUNC3-1];
 
 always_comb 
 begin
-case(i_func3[FUNC3-2:0])
     byte_loaded = 'x; 
     half_loaded = 'x; 
     o_dmem_clean = 'x;
+case(i_func3[FUNC3-2:0])
     CHOOSE_LB:
     begin
         case(i_ALU[1:0])
