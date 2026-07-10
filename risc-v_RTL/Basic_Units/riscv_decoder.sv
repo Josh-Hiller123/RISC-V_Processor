@@ -121,8 +121,8 @@ begin
 end
 CHOOSE_JALR: 
 begin
-    o_ALUcu_ctrl = 2'b00;
-    o_ALUsrc_ctrl = 1'b1;
+    o_ALUcu_ctrl = 'x;
+    o_ALUsrc_ctrl = 'x;
     o_branch_ctrl = 1'b0;
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
