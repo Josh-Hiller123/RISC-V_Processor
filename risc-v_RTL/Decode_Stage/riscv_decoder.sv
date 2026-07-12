@@ -3,7 +3,6 @@ parameter INSTRUCT_WIDTH = 32,
 parameter OPCODE_WIDTH = 7,
 parameter ALU_CU_CTRL = 2,
 parameter IMMEXT_CTRL = 3, 
-parameter JUMPS_CTRL = 2, 
 parameter REGWRITE_MUX_CTRL = 3
 
 ) (
@@ -15,10 +14,11 @@ output logic o_branch_ctrl,                                // to brancheval
 output logic o_mem_write,                                  // to dmem
 output logic o_mem_read,                                   // to dmem
 output logic [IMMEXT_CTRL-1:0] o_immext_ctrl,              // to immext
-output logic [JUMPS_CTRL-1:0] o_jumps_ctrl,                // to pc
+output logic o_jal_ctrl,                                   // to pc
+output logic o_jalr_ctrl,                                   // to pc
 output logic o_wenable,                                    // to regfile
 output logic [REGWRITE_MUX_CTRL-1:0] o_regwrite_mux_ctrl,  // to regwrite_src
-output logic o_lui_jump_target                             // to jump_target, special signal
+output logic o_lui                                         // to jump_target, special signal
 );
 
 //OPCODE PARAMS
@@ -43,10 +43,11 @@ o_branch_ctrl = '0;
 o_mem_write = '0;
 o_mem_read = '0;
 o_immext_ctrl = 'x;
-o_jumps_ctrl = '0;
+o_jal_ctrl = '0;
+o_jalr_ctrl = '0;
 o_wenable = '0;
 o_regwrite_mux_ctrl = 'x;
-o_lui_jump_target = 0;
+o_lui = 0;
 
 case (w_opcode)
 CHOOSE_RTYPE: 
@@ -57,7 +58,8 @@ begin
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
     o_immext_ctrl = 'x;
-    o_jumps_ctrl = 2'b00;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = '0;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b000; 
 end
@@ -69,7 +71,8 @@ begin
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
     o_immext_ctrl = 3'b000;
-    o_jumps_ctrl = 2'b00;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = '0;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b000; 
 end
@@ -81,7 +84,8 @@ begin
     o_mem_write = 1'b0;
     o_mem_read = 1'b1;
     o_immext_ctrl = 3'b000;
-    o_jumps_ctrl = 2'b00;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = '0;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b001;
 end
@@ -93,7 +97,8 @@ begin
     o_mem_write = 1'b1;
     o_mem_read = 1'b0;
     o_immext_ctrl = 3'b001;
-    o_jumps_ctrl = 2'b00;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = '0;
     o_wenable = 1'b0;
     o_regwrite_mux_ctrl = 'x;
 end
@@ -105,7 +110,8 @@ begin
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
     o_immext_ctrl = 3'b010;
-    o_jumps_ctrl = 2'b00;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = '0;   
     o_wenable = 1'b0;
     o_regwrite_mux_ctrl = 'x;
 end
@@ -117,19 +123,21 @@ begin
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
     o_immext_ctrl = 3'b100;
-    o_jumps_ctrl = 2'b01;
+    o_jal_ctrl = 1;
+    o_jalr_ctrl = '0;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b100;
 end
 CHOOSE_JALR: 
 begin
-    o_ALUcu_ctrl = 'x;
-    o_ALUsrc_ctrl = 'x;
+    o_ALUcu_ctrl = 2'b00;
+    o_ALUsrc_ctrl = 1'b1;
     o_branch_ctrl = 1'b0;
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
     o_immext_ctrl = 3'b000;
-    o_jumps_ctrl = 2'b10;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = 1;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b100;
 end
@@ -141,10 +149,11 @@ begin
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
     o_immext_ctrl = 3'b011;
-    o_jumps_ctrl = 2'b00;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = '0;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b010;
-    o_lui_jump_target = 1;
+    o_lui = 1;
 end
 CHOOSE_AUIPC: 
 begin
@@ -154,7 +163,8 @@ begin
     o_mem_write = 1'b0;
     o_mem_read = 1'b0;
     o_immext_ctrl = 3'b011;
-    o_jumps_ctrl = 2'b00;
+    o_jal_ctrl = '0;
+    o_jalr_ctrl = '0;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b010;
 end

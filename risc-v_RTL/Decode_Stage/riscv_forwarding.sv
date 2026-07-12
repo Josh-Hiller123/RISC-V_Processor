@@ -42,12 +42,11 @@ begin
     if(i_ex_wenable && i_ex_rd != 0 && i_ex_rd == i_id_rs2)
     begin
         case({i_ex_memread})
-        FORWARD_NORMAL: o_ex_rs1_ctrl = 1;
+        FORWARD_NORMAL: o_ex_rs2_ctrl = 1;
         //FORWARD_LOAD: figure our later w/ caches
         default: o_ex_rs2_ctrl = 'x;
         endcase
     end
-
         else if (i_mem_wenable && i_mem_rd != 0 && i_mem_rd == i_id_rs2)
         o_mem_rs2_ctrl = 1;
 end

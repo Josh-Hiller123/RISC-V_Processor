@@ -1,7 +1,6 @@
 package id_ex_struct;
 
 localparam PC_WIDTH = 32;
-localparam JUMPS_CTRL = 2;
 localparam REGWRITE_MUX_CTRL = 3;
 localparam REG_DATAWIDTH = 32;
 localparam IMM_WIDTH = 32;
@@ -27,6 +26,7 @@ logic [REG_DATAWIDTH-1:0] rs2_data;
 logic [IMM_WIDTH-1:0] immext;
 
 logic [PC_WIDTH-1:0] jump_target;
+logic jalr_ctrl;
 
 logic [REG_WIDTH-1:0] rd; 
 logic [FUNC3-1:0] func3; 

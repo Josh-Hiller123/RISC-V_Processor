@@ -18,7 +18,7 @@ logic [REG_WIDTH-1:0] rd;
 logic [FUNC3-1:0] func3; 
 logic [PC_WIDTH-1:0] jump_target;
 
-logic [ALU_OUT-1:0] ALU; 
+logic [ALU_OUT-1:0] alu; 
 
 } ex_mem_t;
 

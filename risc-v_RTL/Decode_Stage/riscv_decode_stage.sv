@@ -4,7 +4,7 @@ module riscv_decode_stage(
 input if_id_t i_if_id, 
 
 output id_ex_t o_id_ex_next,
-output logic [JUMPS_CTRL-1:0] o_jumps_ctrl,
+output logic o_jal_ctrl,
 output logic [PC_WIDTH-1:0] o_jump_target
 );
 
@@ -15,7 +15,6 @@ localparam IMM_WIDTH = 32;
 
 localparam ALU_CU_CTRL = 2;
 localparam IMMEXT_CTRL = 3;
-localparam JUMPS_CTRL = 2;
 localparam REGWRITE_MUX_CTRL = 3;
 
 localparam FUNC3 = 3; 
@@ -31,10 +30,11 @@ logic w_branch_ctrl;
 logic w_mem_write;
 logic w_mem_read; 
 logic [IMMEXT_CTRL-1:0] w_immext_ctrl;
-logic [JUMPS_CTRL-1:0] w_jumps_ctrl;
+logic w_jal_ctrl;
+logic w_jalr_ctrl;
 logic w_wenable;
 logic [REGWRITE_MUX_CTRL-1:0] w_regwrite_mux_ctrl; 
-logic w_lui_jump_target;
+logic w_lui;
 
 logic [REG_DATAWIDTH-1:0] w_rs1_data; 
 logic [REG_DATAWIDTH-1:0] w_rs2_data;
@@ -49,8 +49,9 @@ logic [FUNC7-1:0] w_func7;
 logic [ALU_OP-1:0] w_ALUop;
 
 //jumps output ports, connect via top module
-assign o_jumps_ctrl = w_jumps_ctrl; 
+assign o_jal_ctrl = w_jal_ctrl; 
 assign o_jump_target = w_jump_target;
+assign o_id_ex_next.jalr_ctrl = w_jalr_ctrl;
 
 //pc connection wires 
 assign w_pc = i_if_id.pc; 
@@ -93,12 +94,13 @@ riscv_decoder decoder_wiring (
 .o_ALUsrc_ctrl(w_ALUsrc_ctrl), 
 .o_branch_ctrl(w_branch_ctrl), 
 .o_immext_ctrl(w_immext_ctrl),
-.o_jumps_ctrl(w_jumps_ctrl),
+.o_jal_ctrl(w_jal_ctrl),
+.o_jalr_ctrl(w_jalr_ctrl),
 .o_mem_write(w_mem_write), 
 .o_mem_read(w_mem_read), 
 .o_wenable(w_wenable), 
 .o_regwrite_mux_ctrl(w_regwrite_mux_ctrl), 
-.o_lui_jump_target(w_lui_jump_target)
+.o_lui(w_lui)
 ); 
 
 riscv_regfile regfile_wiring (
@@ -115,10 +117,8 @@ riscv_immext immext_wiring (
 
 riscv_jump_target jump_target_wiring (
 .i_pc(w_pc), 
-.i_immext(w_immext), 
-.i_rs1_data(w_rs1_data), 
-.i_jumps_ctrl(w_jumps_ctrl), 
-.i_lui_jump_target(w_lui_jump_target),
+.i_immext(w_immext),  
+.i_lui(w_lui),
 .o_jump_target(w_jump_target)
 );
 

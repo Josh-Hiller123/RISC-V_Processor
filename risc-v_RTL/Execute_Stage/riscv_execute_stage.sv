@@ -1,15 +1,18 @@
 import ex_mem_struct::*; 
 import id_ex_struct::*;
-module riscv_execute_stage (
+module riscv_execute_stage #(
+parameter ALU_OUT = 32
+)(
 input id_ex_t i_id_ex, 
 output ex_mem_t o_ex_mem_next, 
-output logic o_dobranch
+output logic o_dobranch, 
+output logic [ALU_OUT-1:0] o_ALU,
+output logic o_jalr_ctrl
 );
 
 localparam REG_DATAWIDTH = 32;
 localparam IMM_WIDTH = 32;
 localparam ALU_OP = 4;
-localparam ALU_OUT = 32;
 localparam FUNC3 = 3;
 
 logic [REG_DATAWIDTH-1:0] w_rs2_data;
@@ -24,6 +27,10 @@ logic w_zero;
 
 logic [FUNC3-1:0] w_func3; 
 logic w_branch_ctrl; 
+
+ 
+//jalr_ctrl wiring connection 
+assign o_jalr_ctrl = i_id_ex.jalr_ctrl;
 
 //i_id_ex wiring connections (from previous reg carrying on to mem)
 assign o_ex_mem_next.pc_add_four = i_id_ex.pc_add_four;
@@ -44,7 +51,8 @@ assign w_ALUsrc_ctrl = i_id_ex.ALUsrc_ctrl;
 //ALU wiring connections
 assign w_rs1_data = i_id_ex.rs1_data;
 assign w_ALUop = i_id_ex.ALUop; 
-assign o_ex_mem_next.ALU = w_ALU;
+assign o_ex_mem_next.alu = w_ALU;
+assign o_ALU = w_ALU;
 
 //brancheval wiring connections 
 assign w_func3 = i_id_ex.func3;
