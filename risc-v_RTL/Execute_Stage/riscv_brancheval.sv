@@ -1,4 +1,4 @@
-module rscv_brancheval #(
+module riscv_brancheval #(
 parameter FUNC3 = 3
 )(
 input logic [FUNC3-1:0] i_func3,

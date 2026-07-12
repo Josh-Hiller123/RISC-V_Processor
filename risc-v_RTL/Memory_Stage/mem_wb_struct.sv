@@ -1,0 +1,2 @@
+package mem_wb_struct;
+endpackage

@@ -1,12 +1,12 @@
 module riscv_ALUsrc #(
-parameter INSTRUCT_WIDTH = 32, 
+parameter IMM_WIDTH = 32, 
 parameter REG_DATAWIDTH = 32
 )(
 input logic [REG_DATAWIDTH-1:0] i_rs2_data, 
-input logic [INSTRUCT_WIDTH-1:0] i_immext, 
+input logic [IMM_WIDTH-1:0] i_immext, 
 input logic i_ALUsrc_ctrl,
 
-output logic [INSTRUCT_WIDTH-1:0] o_ALUsrcB
+output logic [REG_DATAWIDTH-1:0] o_ALUsrcB
 );
 
 localparam SELECT_RS2 = 1'b0;  

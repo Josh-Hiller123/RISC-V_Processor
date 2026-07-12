@@ -1,4 +1,4 @@
-module ALU_ctrl_unit #(
+module riscv_ALU_cu #(
 parameter ALU_CU_CTRL = 2, 
 parameter FUNC3 = 3, 
 parameter FUNC7 = 7, 

@@ -17,7 +17,8 @@ output logic o_mem_read,                                   // to dmem
 output logic [IMMEXT_CTRL-1:0] o_immext_ctrl,              // to immext
 output logic [JUMPS_CTRL-1:0] o_jumps_ctrl,                // to pc
 output logic o_wenable,                                    // to regfile
-output logic [REGWRITE_MUX_CTRL-1:0] o_regwrite_mux_ctrl   // to regwrite_src
+output logic [REGWRITE_MUX_CTRL-1:0] o_regwrite_mux_ctrl,  // to regwrite_src
+output logic o_lui_jump_target                             // to jump_target, special signal
 );
 
 //OPCODE PARAMS
@@ -45,6 +46,7 @@ o_immext_ctrl = 'x;
 o_jumps_ctrl = '0;
 o_wenable = '0;
 o_regwrite_mux_ctrl = 'x;
+o_lui_jump_target = 0;
 
 case (w_opcode)
 CHOOSE_RTYPE: 
@@ -142,6 +144,7 @@ begin
     o_jumps_ctrl = 2'b00;
     o_wenable = 1'b1;
     o_regwrite_mux_ctrl = 3'b010;
+    o_lui_jump_target = 1;
 end
 CHOOSE_AUIPC: 
 begin
@@ -153,7 +156,7 @@ begin
     o_immext_ctrl = 3'b011;
     o_jumps_ctrl = 2'b00;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b101;
+    o_regwrite_mux_ctrl = 3'b010;
 end
 endcase
 end
