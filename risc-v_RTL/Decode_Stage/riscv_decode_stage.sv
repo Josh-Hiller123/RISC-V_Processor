@@ -15,7 +15,7 @@ localparam IMM_WIDTH = 32;
 
 localparam ALU_CU_CTRL = 2;
 localparam IMMEXT_CTRL = 3;
-localparam REGWRITE_MUX_CTRL = 3;
+localparam MEM_FORWARD_CTRL = 2;
 
 localparam FUNC3 = 3; 
 localparam FUNC7 = 7; 
@@ -33,7 +33,7 @@ logic [IMMEXT_CTRL-1:0] w_immext_ctrl;
 logic w_jal_ctrl;
 logic w_jalr_ctrl;
 logic w_wenable;
-logic [REGWRITE_MUX_CTRL-1:0] w_regwrite_mux_ctrl; 
+logic [MEM_FORWARD_CTRL-1:0] w_mem_forward_ctrl; 
 logic w_lui;
 
 logic [REG_DATAWIDTH-1:0] w_rs1_data; 
@@ -75,7 +75,7 @@ assign o_id_ex_next.branch_ctrl = w_branch_ctrl;
 assign o_id_ex_next.mem_write = w_mem_write; 
 assign o_id_ex_next.mem_read = w_mem_read; 
 assign o_id_ex_next.wenable = w_wenable;
-assign o_id_ex_next.regwrite_mux_ctrl = w_regwrite_mux_ctrl;
+assign o_id_ex_next.mem_forward_ctrl = w_mem_forward_ctrl;
 
 //regfile_wiring connection wires
 assign o_id_ex_next.rs1_data = w_rs1_data; 
@@ -99,7 +99,7 @@ riscv_decoder decoder_wiring (
 .o_mem_write(w_mem_write), 
 .o_mem_read(w_mem_read), 
 .o_wenable(w_wenable), 
-.o_regwrite_mux_ctrl(w_regwrite_mux_ctrl), 
+.o_mem_forward_ctrl(w_mem_forward_ctrl), 
 .o_lui(w_lui)
 ); 
 

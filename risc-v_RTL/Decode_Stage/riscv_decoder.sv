@@ -3,22 +3,22 @@ parameter INSTRUCT_WIDTH = 32,
 parameter OPCODE_WIDTH = 7,
 parameter ALU_CU_CTRL = 2,
 parameter IMMEXT_CTRL = 3, 
-parameter REGWRITE_MUX_CTRL = 3
+parameter MEM_FORWARD_CTRL = 2
 
 ) (
 input logic [INSTRUCT_WIDTH-1:0] i_instruct, 
 
-output logic [ALU_CU_CTRL-1:0] o_ALUcu_ctrl,               // to ALU_cu
-output logic o_ALUsrc_ctrl,                                // to ALUsrc
-output logic o_branch_ctrl,                                // to brancheval
-output logic o_mem_write,                                  // to dmem
-output logic o_mem_read,                                   // to dmem
-output logic [IMMEXT_CTRL-1:0] o_immext_ctrl,              // to immext
-output logic o_jal_ctrl,                                   // to pc
-output logic o_jalr_ctrl,                                   // to pc
-output logic o_wenable,                                    // to regfile
-output logic [REGWRITE_MUX_CTRL-1:0] o_regwrite_mux_ctrl,  // to regwrite_src
-output logic o_lui                                         // to jump_target, special signal
+output logic [ALU_CU_CTRL-1:0] o_ALUcu_ctrl,              // to ALU_cu
+output logic o_ALUsrc_ctrl,                               // to ALUsrc
+output logic o_branch_ctrl,                               // to brancheval
+output logic o_mem_write,                                 // to dmem
+output logic o_mem_read,                                  // to dmem
+output logic [IMMEXT_CTRL-1:0] o_immext_ctrl,             // to immext
+output logic o_jal_ctrl,                                  // to pc
+output logic o_jalr_ctrl,                                 // to pc
+output logic o_wenable,                                   // to regfile
+output logic [MEM_FORWARD_CTRL-1:0] o_mem_forward_ctrl,   // to mem_forward
+output logic o_lui                                        // to jump_target, special signal
 );
 
 //OPCODE PARAMS
@@ -46,7 +46,7 @@ o_immext_ctrl = 'x;
 o_jal_ctrl = '0;
 o_jalr_ctrl = '0;
 o_wenable = '0;
-o_regwrite_mux_ctrl = 'x;
+o_mem_forward_ctrl = 'x;
 o_lui = 0;
 
 case (w_opcode)
@@ -61,7 +61,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = '0;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b000; 
+    o_mem_forward_ctrl = 2'b00; 
 end
 CHOOSE_ITYPE_ALU: 
 begin
@@ -74,7 +74,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = '0;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b000; 
+    o_mem_forward_ctrl = 2'b00; 
 end
 CHOOSE_LOAD: 
 begin
@@ -87,7 +87,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = '0;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b001;
+    o_mem_forward_ctrl = 'x;
 end
 CHOOSE_STORE: 
 begin
@@ -100,7 +100,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = '0;
     o_wenable = 1'b0;
-    o_regwrite_mux_ctrl = 'x;
+    o_mem_forward_ctrl = 'x;
 end
 CHOOSE_BRANCH: 
 begin
@@ -113,7 +113,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = '0;   
     o_wenable = 1'b0;
-    o_regwrite_mux_ctrl = 'x;
+    o_mem_forward_ctrl = 'x;
 end
 CHOOSE_JAL: 
 begin
@@ -126,7 +126,7 @@ begin
     o_jal_ctrl = 1;
     o_jalr_ctrl = '0;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b100;
+    o_mem_forward_ctrl = 2'b01;
 end
 CHOOSE_JALR: 
 begin
@@ -139,7 +139,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = 1;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b100;
+    o_mem_forward_ctrl = 2'b01;
 end
 CHOOSE_LUI: 
 begin
@@ -152,7 +152,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = '0;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b010;
+    o_mem_forward_ctrl = 2'b10;
     o_lui = 1;
 end
 CHOOSE_AUIPC: 
@@ -166,7 +166,7 @@ begin
     o_jal_ctrl = '0;
     o_jalr_ctrl = '0;
     o_wenable = 1'b1;
-    o_regwrite_mux_ctrl = 3'b010;
+    o_mem_forward_ctrl = 2'b10;
 end
 endcase
 end

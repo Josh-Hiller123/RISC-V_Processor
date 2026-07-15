@@ -1,7 +1,7 @@
 package id_ex_struct;
 
 localparam PC_WIDTH = 32;
-localparam REGWRITE_MUX_CTRL = 3;
+localparam MEM_FORWARD_CTRL = 2;
 localparam REG_DATAWIDTH = 32;
 localparam IMM_WIDTH = 32;
 localparam FUNC3 = 3; 
@@ -18,7 +18,7 @@ logic branch_ctrl;
 logic mem_write;
 logic mem_read; 
 logic wenable;
-logic [REGWRITE_MUX_CTRL-1:0] regwrite_mux_ctrl; 
+logic [MEM_FORWARD_CTRL-1:0] mem_forward_ctrl; 
 
 logic [REG_DATAWIDTH-1:0] rs1_data; 
 logic [REG_DATAWIDTH-1:0] rs2_data; 
