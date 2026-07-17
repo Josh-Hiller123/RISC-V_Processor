@@ -12,7 +12,7 @@ output logic [DATA_WIDTH-1:0] o_dmem_clean
 // FUNC3 PARAMS
 localparam CHOOSE_LB = 2'b00;
 localparam CHOOSE_LH = 2'b01;
-localparam CHOOSE_LW = 2'b10; 
+localparam CHOOSE_LW = 2'b10;   
 
 //LB PARAMS
 localparam CHOOSE_BYTE0 = 2'b00; 

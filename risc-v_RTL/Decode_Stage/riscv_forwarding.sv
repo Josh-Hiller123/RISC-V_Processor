@@ -15,7 +15,8 @@ input logic i_ex_memread,
 output logic o_ex_rs1_ctrl, 
 output logic o_ex_rs2_ctrl,
 output logic o_mem_rs1_ctrl, 
-output logic o_mem_rs2_ctrl
+output logic o_mem_rs2_ctrl, 
+output logic o_forward_load 
 ); 
 
 localparam FORWARD_NORMAL = 1'b0;
@@ -27,12 +28,13 @@ begin
     o_ex_rs2_ctrl = 0;
     o_mem_rs1_ctrl = 0; 
     o_mem_rs2_ctrl = 0;
+    o_forward_load = 0;
 
     if(i_ex_wenable && i_ex_rd != 0 && i_ex_rd == i_id_rs1)
     begin
         case({i_ex_memread})
         FORWARD_NORMAL: o_ex_rs1_ctrl = 1;
-        //FORWARD_LOAD: figure our later w/ caches
+        FORWARD_LOAD: o_forward_load = 1;
         default: o_ex_rs1_ctrl = 'x;
         endcase
     end
@@ -43,7 +45,7 @@ begin
     begin
         case({i_ex_memread})
         FORWARD_NORMAL: o_ex_rs2_ctrl = 1;
-        //FORWARD_LOAD: figure our later w/ caches
+        FORWARD_LOAD: o_forward_load = 1;
         default: o_ex_rs2_ctrl = 'x;
         endcase
     end

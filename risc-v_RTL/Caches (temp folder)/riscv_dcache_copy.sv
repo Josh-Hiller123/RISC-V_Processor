@@ -32,7 +32,7 @@ output logic [TAG_BITS+INDEX_BITS-1:0] o_index_request,
 output logic o_wb_flag,
 output logic [TAG_BITS+INDEX_BITS-1:0] o_wb_addr, 
 output logic [DCACHE_ENTRIES-TAG_BITS-1:0] o_wb_data,
-output logic [REG_DATAWIDTH-1:0] o_load_data
+output logic [REG_DATAWIDTH-1:0] o_load_data,  
 
 output logic o_dcache_fence,
 output logic [WAYS_AMT-1:0] o_fence_wb_way
@@ -75,8 +75,12 @@ logic [WAYS_AMT-1:0] w_evict_one_hot;
 logic [EVICT_BINARY-1:0] w_evict_binary;
 logic [WAYS_AMT-1:0] w_way_promote;
 
-logic [INDEX_BITS-1:0] fence_pointer [WAYS_AMT-1:0];
-logic [INDEX_BITS-1:0] fence_pointer_next [WAYS_AMT-1:0];
+logic [INDEX_BITS-1:0] fence_pointer;                   
+logic [WAYS_AMT-1:0] w_fence_dirty_ways;               
+logic [WAYS_AMT-1:0] w_fence_wb_one_hot;                 
+logic [EVICT_BINARY-1:0] w_fence_wb_binary;             
+logic [WAYS_AMT-1:0] w_wb_prev;                          
+logic w_check_dirty;                                     
 logic w_fence_doflush;
 
 assign w_tag = i_alu[MAIN_MEM_WIDTH-1:INDEX_BITS+WORD_BITS+2];
@@ -88,10 +92,14 @@ assign o_dcache_miss = (i_memwrite | i_memread) && ~(|w_hit_way | i_handshake);
 assign o_index_request = o_dcache_miss ? i_alu[MAIN_MEM_WIDTH-1-:TAG_BITS+INDEX_BITS] : '0;
 
 assign o_wb_flag = (o_dcache_miss && (dirty_bits[w_evict_binary][w_index] == 1));
-assign o_wb_addr = {dcache_mem[w_evict_binary][w_index][DCACHE_ENTRIES-1-:TAG_BITS], w_index};
-assign o_wb_data = dcache_mem[w_evict_binary][w_index][DCACHE_ENTRIES-TAG_BITS-1:0];
+assign o_wb_addr = o_dcache_fence ? {dcache_mem[w_fence_wb_binary][fence_pointer][DCACHE_ENTRIES-1-:TAG_BITS], fence_pointer}
+                                : {dcache_mem[w_evict_binary][w_index][DCACHE_ENTRIES-1-:TAG_BITS], w_index};
+assign o_wb_data = o_dcache_fence ? dcache_mem[w_fence_wb_binary][fence_pointer][DCACHE_ENTRIES-TAG_BITS-1:0]
+                                : dcache_mem[w_evict_binary][w_index][DCACHE_ENTRIES-TAG_BITS-1:0];
 
-assign w_fence_doflush = (|dirty_bits)
+assign o_dcache_fence  = i_fence && w_fence_doflush;                
+assign o_fence_wb_way  = o_dcache_fence ? w_fence_wb_one_hot : '0;       
+assign w_fence_doflush = w_check_dirty;                                 
 
 //determines hit_way 
 genvar i; 
@@ -157,8 +165,10 @@ end
 
 
 //synchronous writes to the dcache from main memory, hit-store and miss-store logic
+//dirty-bit clear logic for fence
 int ii;
 int w;
+int fc;                                        
 always_ff @(posedge i_clk or negedge i_nrst)
 begin
 if(!i_nrst)
@@ -166,8 +176,7 @@ if(!i_nrst)
     begin
     valid_bits[ii] <= '0;
     dirty_bits[ii] <= '0;
-    fence_pointer[ii] <= '0;
-    end
+    end                                           
 else 
 begin 
     if(i_handshake)
@@ -177,6 +186,10 @@ begin
         valid_bits[w_evict_binary][w_index] <= 1;
         dirty_bits[w_evict_binary][w_index] <= 0;
     end
+    if(i_fence)
+    for(fc = 0; fc <= WAYS_AMT-1; fc++)
+        if(w_wb_prev[fc] && !i_wb_in_progress[fc])
+        dirty_bits[fc][fence_pointer] <= 1'b0;
     
     if(i_memwrite && (w_hit_way | i_handshake))
     begin
@@ -226,34 +239,44 @@ begin
     endcase
 end
 
-//fence.i logic, fence_pointer already reset by !nrst above ^^
-int ff;
-always_ff @(posedge i_clk)
+//fence calculates which way is dirty, used as index for wb addr/data and 
+//as a flag for main mem to know a wb is happening
+int fd;
+always_comb
 begin
-    if(i_fence && w_fence_doflush)
-    begin
-        for(ff = 0; ff <= WAYS_AMT-1; ff++)
-        fence_pointer[ff] <= fence_pointer_next;
-    end
+    for(fd = 0; fd <= WAYS_AMT-1; fd++)
+    w_fence_dirty_ways[fd] = dirty_bits[fd][fence_pointer];
+
+    w_fence_wb_one_hot = w_fence_dirty_ways & (~w_fence_dirty_ways + 1'b1);
+
+    w_fence_wb_binary = '0;
+    for(fd = 0; fd <= WAYS_AMT-1; fd++)
+    if(w_fence_wb_one_hot[fd])
+    w_fence_wb_binary = EVICT_BINARY'(fd);
 end
 
-int f;
-always_comb 
+int d;
+always_comb
 begin
-    for(f = 0; f <= WAYS_AMT-1; f++)
+    w_check_dirty = '0;
+    for(d = 0; d <= WAYS_AMT-1; d++)
+    w_check_dirty = (w_check_dirty || (|dirty_bits[d]));
+end
+
+always_ff @(posedge i_clk or negedge i_nrst)   
+begin
+    if(!i_nrst)
     begin
-        fence_pointer_next[f] = '0;
-        if(i_wb_in_progress[f])
-        fence_pointer_next[f] = fence_pointer[f];
-        else 
-        begin 
-            if(dirty_bits[f][fence_pointer])
-            o_fence_wb_way[f] = 1'b1; 
-            fence_pointer_next[f] = fence_pointer[f]; 
-            
-            if(!dirty_bits[f][fence_pointer])
-            fence_pointer_next = fence_pointer + 1;
-        end
+        fence_pointer <= '0;
+        w_wb_prev <= '0;
+    end
+    else
+    begin
+        w_wb_prev <= i_wb_in_progress;                            
+        if(!i_fence)
+        fence_pointer <= '0;                             
+        else if(w_fence_doflush && !(|w_fence_dirty_ways))
+        fence_pointer <= fence_pointer + 1'b1;                  
     end
 end
 

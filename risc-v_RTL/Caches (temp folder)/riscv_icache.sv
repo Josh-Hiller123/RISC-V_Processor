@@ -2,7 +2,6 @@ module riscv_icache #(
 parameter PC_WIDTH = 32, 
 parameter INSTRUCT_WIDTH = 32, 
 parameter MAIN_MEM_WIDTH = 16,
-
 parameter WAYS_AMT = 3, 
 
 
@@ -16,10 +15,12 @@ parameter EVICT_BINARY = $clog2(WAYS_AMT)
 input logic i_clk,
 input logic i_nrst,
 input logic i_handshake,
+input logic i_fence,
 input logic [PC_WIDTH-1:0] i_pc,
 input logic [ICACHE_ENTRIES-TAG_BITS-1:0] i_index_fetched,
 
 output logic o_icache_miss,
+output logic [TAG_BITS+INDEX_BITS-1:0] o_index_request,
 output logic [INSTRUCT_WIDTH-1:0] o_instruct
 );
 
@@ -32,7 +33,6 @@ logic [INSTRUCT_WIDTH-1:0] w_instruct_critical;
 
 logic [ICACHE_ENTRIES-1:0] icache_mem [WAYS_AMT-1:0][(1 << INDEX_BITS)-1:0];
 logic [(1 << INDEX_BITS)-1:0] valid_bits [WAYS_AMT-1:0];
-
 logic [WAYS_AMT-1:0] w_hit_way;
 
 logic [WAYS_AMT-1:0] lru_matrix [(1 << INDEX_BITS)-1:0][WAYS_AMT-1:0];
@@ -49,6 +49,7 @@ assign w_word = i_pc[WORD_BITS+1:2];
 assign w_instruct_critical = i_index_fetched[(w_word*INSTRUCT_WIDTH)+:INSTRUCT_WIDTH];
 
 assign o_icache_miss = ~(|w_hit_way | i_handshake);
+assign o_index_request = o_icache_miss ? i_pc[MAIN_MEM_WIDTH-1-:TAG_BITS+INDEX_BITS] : '0;
 
 
 //determines hit_way 
@@ -101,7 +102,7 @@ begin
     if(w_evict_invalid != 0)
     w_evict_candidates = w_evict_invalid;
         else 
-        w_evict_candidates = w_ev ict_valid;
+        w_evict_candidates = w_evict_valid;
 
     w_evict_one_hot = w_evict_candidates & (~w_evict_candidates + 1'b1);
 
@@ -117,7 +118,7 @@ end
 int ii;
 always_ff @(posedge i_clk or negedge i_nrst)
 begin
-if(!i_nrst)
+if(!i_nrst | i_fence)
     for(ii = 0; ii <= WAYS_AMT-1; ii++)
     valid_bits[ii] <= '0;
 else if(i_handshake)
