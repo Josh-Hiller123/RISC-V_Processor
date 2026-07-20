@@ -33,5 +33,8 @@ logic [FUNC3-1:0] func3;
 
 logic [ALU_OP-1:0] ALUop;
 
+logic fencei;
+
+
 } id_ex_t; 
 endpackage

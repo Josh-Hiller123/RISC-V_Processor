@@ -1,6 +1,6 @@
 package ex_mem_struct;
 localparam PC_WIDTH = 32;
-localparam MEM_FORWARD_CTRL = 3;
+localparam MEM_FORWARD_CTRL = 2;
 localparam REG_DATAWIDTH = 32;
 localparam REG_WIDTH = 5;
 localparam FUNC3 = 3; 
@@ -19,6 +19,8 @@ logic [FUNC3-1:0] func3;
 logic [PC_WIDTH-1:0] jump_target;
 
 logic [ALU_OUT-1:0] alu; 
+
+logic fencei;
 
 } ex_mem_t;
 

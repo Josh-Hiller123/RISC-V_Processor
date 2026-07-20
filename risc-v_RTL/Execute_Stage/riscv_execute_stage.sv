@@ -28,6 +28,7 @@ logic w_zero;
 logic [FUNC3-1:0] w_func3; 
 logic w_branch_ctrl; 
 
+
  
 //jalr_ctrl wiring connection 
 assign o_jalr_ctrl = i_id_ex.jalr_ctrl;
@@ -42,6 +43,7 @@ assign o_ex_mem_next.rs2_data = w_rs2_data;
 assign o_ex_mem_next.rd = i_id_ex.rd;
 assign o_ex_mem_next.func3 = w_func3;
 assign o_ex_mem_next.jump_target = i_id_ex.jump_target; 
+assign o_ex_mem_next.fencei = i_id_ex.fencei;
 
 // ALUsrc wiring connections
 assign w_rs2_data = i_id_ex.rs2_data;

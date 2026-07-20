@@ -48,6 +48,8 @@ logic [FUNC7-1:0] w_func7;
 
 logic [ALU_OP-1:0] w_ALUop;
 
+logic w_fencei;
+
 //jumps output ports, connect via top module
 assign o_jal_ctrl = w_jal_ctrl; 
 assign o_jump_target = w_jump_target;
@@ -76,6 +78,7 @@ assign o_id_ex_next.mem_write = w_mem_write;
 assign o_id_ex_next.mem_read = w_mem_read; 
 assign o_id_ex_next.wenable = w_wenable;
 assign o_id_ex_next.mem_forward_ctrl = w_mem_forward_ctrl;
+assign o_id_ex_next.fencei = w_fencei;
 
 //regfile_wiring connection wires
 assign o_id_ex_next.rs1_data = w_rs1_data; 
@@ -100,6 +103,7 @@ riscv_decoder decoder_wiring (
 .o_mem_read(w_mem_read), 
 .o_wenable(w_wenable), 
 .o_mem_forward_ctrl(w_mem_forward_ctrl), 
+.o_fencei(w_fencei),
 .o_lui(w_lui)
 ); 
 

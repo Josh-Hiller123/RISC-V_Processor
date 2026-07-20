@@ -18,6 +18,7 @@ output logic o_jal_ctrl,                                  // to pc
 output logic o_jalr_ctrl,                                 // to pc
 output logic o_wenable,                                   // to regfile
 output logic [MEM_FORWARD_CTRL-1:0] o_mem_forward_ctrl,   // to mem_forward
+output logic o_fencei,
 output logic o_lui                                        // to jump_target, special signal
 );
 
@@ -31,9 +32,21 @@ localparam CHOOSE_JAL = 7'b1101111;
 localparam CHOOSE_JALR = 7'b1100111; 
 localparam CHOOSE_LUI = 7'b0110111; 
 localparam CHOOSE_AUIPC = 7'b0010111;
+localparam CHOOSE_ECALL_EBREAK = 7'b1110011; 
+localparam CHOOSE_FENCE = 7'b0001111;
+
+
+//FENCE-SPECIFIC PARAMS
+localparam FUNC3 = 3;
+localparam FENCE = 3'b000;
+localparam FENCE_I = 3'b001;
+
 
 logic [OPCODE_WIDTH-1:0] w_opcode;
+logic [FUNC3-1:0] w_func3;
+
 assign w_opcode = i_instruct[OPCODE_WIDTH-1:0]; 
+assign w_func3 = i_instruct[14:12]; 
 
 always_comb
 begin
@@ -47,6 +60,7 @@ o_jal_ctrl = '0;
 o_jalr_ctrl = '0;
 o_wenable = '0;
 o_mem_forward_ctrl = 'x;
+o_fencei = 0;
 o_lui = 0;
 
 case (w_opcode)
@@ -168,6 +182,18 @@ begin
     o_wenable = 1'b1;
     o_mem_forward_ctrl = 2'b10;
 end
+CHOOSE_FENCE: 
+case(w_func3)
+FENCE: ;
+FENCE_I:
+begin
+    o_fencei = 1;
+end
+default: ;
+endcase
+
+CHOOSE_ECALL_EBREAK: ;
+default: ;
 endcase
 end
 endmodule

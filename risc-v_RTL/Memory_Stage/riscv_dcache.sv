@@ -82,6 +82,9 @@ logic [EVICT_BINARY-1:0] w_fence_wb_binary;
 logic [WAYS_AMT-1:0] w_wb_prev;                          
 logic w_check_dirty;                                     
 logic w_fence_doflush;
+logic w_fence_wb_delay;
+
+
 
 assign w_tag = i_alu[MAIN_MEM_WIDTH-1:INDEX_BITS+WORD_BITS+2];
 assign w_index = i_alu[INDEX_BITS+WORD_BITS+1:WORD_BITS+2];
@@ -97,9 +100,12 @@ assign o_wb_addr = o_dcache_fence ? {dcache_mem[w_fence_wb_binary][fence_pointer
 assign o_wb_data = o_dcache_fence ? dcache_mem[w_fence_wb_binary][fence_pointer][DCACHE_ENTRIES-TAG_BITS-1:0]
                                 : dcache_mem[w_evict_binary][w_index][DCACHE_ENTRIES-TAG_BITS-1:0];
 
-assign o_dcache_fence  = i_fence && w_fence_doflush;                
-assign o_fence_wb_way  = o_dcache_fence ? w_fence_wb_one_hot : '0;       
-assign w_fence_doflush = w_check_dirty;                                 
+assign o_dcache_fence  = i_fence && w_fence_doflush;
+assign w_fence_doflush = w_check_dirty;                 
+
+assign o_fence_wb_way  = (o_dcache_fence && !w_fence_wb_delay) ? w_fence_wb_one_hot : '0;   
+assign w_fence_wb_delay = (|w_wb_prev && !(|i_wb_in_progress));
+                              
 
 //determines hit_way 
 genvar i; 
@@ -282,4 +288,3 @@ end
 
 
 endmodule
-
