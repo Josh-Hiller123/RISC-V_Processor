@@ -1,12 +1,12 @@
 module riscv_load_ext #(
-parameter DATA_WIDTH = 32, 
+parameter REG_DATAWIDTH = 32, 
 parameter FUNC3 = 3
 )(
-input logic [DATA_WIDTH-1:0] i_dmem_raw, 
+input logic [REG_DATAWIDTH-1:0] i_dmem_raw, 
 input logic [FUNC3-1:0] i_func3, 
-input logic [DATA_WIDTH-1:0] i_ALU, 
+input logic [REG_DATAWIDTH-1:0] i_ALU, 
 
-output logic [DATA_WIDTH-1:0] o_dmem_clean
+output logic [REG_DATAWIDTH-1:0] o_dmem_clean
 );
 
 // FUNC3 PARAMS

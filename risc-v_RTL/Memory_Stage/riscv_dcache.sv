@@ -20,7 +20,7 @@ input logic i_handshake,
 input logic i_fence,
 input logic [WAYS_AMT-1:0] i_wb_in_progress,
 
-input logic [ALU-1:0] i_alu,
+input logic [ALU-1:0] i_ALU,
 input logic [REG_DATAWIDTH-1:0] i_rs2_data,
 input logic[FUNC3-1:0] i_func3,
 input logic i_memwrite,
@@ -86,13 +86,13 @@ logic w_fence_wb_delay;
 
 
 
-assign w_tag = i_alu[MAIN_MEM_WIDTH-1:INDEX_BITS+WORD_BITS+2];
-assign w_index = i_alu[INDEX_BITS+WORD_BITS+1:WORD_BITS+2];
-assign w_word = i_alu[WORD_BITS+1:2];
+assign w_tag = i_ALU[MAIN_MEM_WIDTH-1:INDEX_BITS+WORD_BITS+2];
+assign w_index = i_ALU[INDEX_BITS+WORD_BITS+1:WORD_BITS+2];
+assign w_word = i_ALU[WORD_BITS+1:2];
 assign w_load_critical = i_index_fetched[(w_word*REG_DATAWIDTH)+:REG_DATAWIDTH];
 
 assign o_dcache_miss = (i_memwrite | i_memread) && ~(|w_hit_way | i_handshake);
-assign o_index_request = o_dcache_miss ? i_alu[MAIN_MEM_WIDTH-1-:TAG_BITS+INDEX_BITS] : '0;
+assign o_index_request = o_dcache_miss ? i_ALU[MAIN_MEM_WIDTH-1-:TAG_BITS+INDEX_BITS] : '0;
 
 assign o_wb_flag = (o_dcache_miss && (dirty_bits[w_evict_binary][w_index] == 1));
 assign o_wb_addr = o_dcache_fence ? {dcache_mem[w_fence_wb_binary][fence_pointer][DCACHE_ENTRIES-1-:TAG_BITS], fence_pointer}
@@ -206,7 +206,7 @@ begin
         dirty_bits[w][w_index] <= 1;
         case(i_func3)
         CHOOSE_SB: 
-            case(i_alu[1:0])
+            case(i_ALU[1:0])
                 CHOOSE_BYTE0: dcache_mem[w][w_index][w_word*REG_DATAWIDTH+:8] <= i_rs2_data[7:0]; 
                 CHOOSE_BYTE1: dcache_mem[w][w_index][8+(w_word*REG_DATAWIDTH)+:8] <= i_rs2_data[7:0];  
                 CHOOSE_BYTE2: dcache_mem[w][w_index][16+(w_word*REG_DATAWIDTH)+:8] <= i_rs2_data[7:0];
@@ -214,7 +214,7 @@ begin
                 default: ;
             endcase
         CHOOSE_SH:
-            case(i_alu[1])
+            case(i_ALU[1])
                 CHOOSE_HALF0: dcache_mem[w][w_index][w_word*REG_DATAWIDTH+:16] <= i_rs2_data[15:0]; 
                 CHOOSE_HALF1: dcache_mem[w][w_index][16+(w_word*REG_DATAWIDTH)+:16] <= i_rs2_data[15:0]; 
                 default: ;

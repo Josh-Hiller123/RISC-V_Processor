@@ -8,8 +8,7 @@ parameter WAYS_AMT = 3,
 parameter INDEX_BITS = 5,
 parameter WORD_BITS = 2, 
 parameter TAG_BITS = MAIN_MEM_WIDTH-INDEX_BITS-WORD_BITS-2, 
-parameter ICACHE_ENTRIES = TAG_BITS+((1 << WORD_BITS) * INSTRUCT_WIDTH),
-parameter EVICT_BINARY = $clog2(WAYS_AMT)
+parameter ICACHE_ENTRIES = TAG_BITS+((1 << WORD_BITS) * INSTRUCT_WIDTH)
 
 )(
 input logic i_clk,
@@ -18,11 +17,15 @@ input logic i_handshake,
 input logic i_fence,
 input logic [PC_WIDTH-1:0] i_pc,
 input logic [ICACHE_ENTRIES-TAG_BITS-1:0] i_index_fetched,
+input logic i_jalr_ctrl,
 
 output logic o_icache_miss,
 output logic [TAG_BITS+INDEX_BITS-1:0] o_index_request,
 output logic [INSTRUCT_WIDTH-1:0] o_instruct
 );
+
+localparam NO_OP = 32'h00000013;
+localparam EVICT_BINARY = $clog2(WAYS_AMT);
 
 logic [TAG_BITS-1:0] w_tag;
 logic [INDEX_BITS-1:0] w_index; 
@@ -48,7 +51,7 @@ assign w_index = i_pc[INDEX_BITS+WORD_BITS+1:WORD_BITS+2];
 assign w_word = i_pc[WORD_BITS+1:2];
 assign w_instruct_critical = i_index_fetched[(w_word*INSTRUCT_WIDTH)+:INSTRUCT_WIDTH];
 
-assign o_icache_miss = ~(|w_hit_way | i_handshake);
+assign o_icache_miss = ~(|w_hit_way | i_handshake | i_jalr_ctrl);
 assign o_index_request = o_icache_miss ? i_pc[MAIN_MEM_WIDTH-1-:TAG_BITS+INDEX_BITS] : '0;
 
 
@@ -134,11 +137,17 @@ end
 int x;
 always_comb
 begin
-    w_instruct_next = 'x;
-    for(x = 0; x <= WAYS_AMT-1; x++)
-        if(w_hit_way[x])    
-            w_instruct_next = icache_mem[x][w_index][(w_word*INSTRUCT_WIDTH)+:INSTRUCT_WIDTH];
-            
+    case(i_jalr_ctrl)
+    1'b1: w_instruct_next = NO_OP;
+    1'b0: 
+    begin
+        w_instruct_next = 'x;
+        for(x = 0; x <= WAYS_AMT-1; x++)
+            if(w_hit_way[x])    
+                w_instruct_next = icache_mem[x][w_index][(w_word*INSTRUCT_WIDTH)+:INSTRUCT_WIDTH];
+    end
+    endcase
+
     case(i_handshake)
     1'b0: o_instruct = w_instruct_next;
     1'b1: o_instruct = w_instruct_critical;

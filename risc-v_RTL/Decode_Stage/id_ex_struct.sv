@@ -35,6 +35,11 @@ logic [ALU_OP-1:0] ALUop;
 
 logic fencei;
 
+logic ex_rs1_ctrl;
+logic ex_rs2_ctrl;
+logic mem_rs1_ctrl;
+logic mem_rs2_ctrl;
+
 
 } id_ex_t; 
 endpackage

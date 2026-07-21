@@ -1,12 +1,11 @@
 module riscv_regfile #(
 parameter REG_DATAWIDTH = 32, 
-parameter DATA_WIDTH = 32,
 parameter INSTRUCT_WIDTH = 32, 
 parameter REG_WIDTH = 5
 )(
 input logic i_clk, 
 input logic [INSTRUCT_WIDTH-1:0] i_instruct,
-input logic [DATA_WIDTH-1:0] i_din,
+input logic [REG_DATAWIDTH-1:0] i_din,
 input logic i_wenable, 
 input logic [REG_WIDTH-1:0] i_rd,
 

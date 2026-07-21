@@ -1,16 +1,35 @@
 import if_id_struct::*;
 import id_ex_struct::*;
-module riscv_decode_stage(
+module riscv_decode_stage#(
+parameter REG_DATAWIDTH = 32, 
+parameter REG_WIDTH = 5, 
+parameter PC_WIDTH = 32
+)(
+input logic i_clk,
 input if_id_t i_if_id, 
 
-output id_ex_t o_id_ex_next,
-output logic o_jal_ctrl,
-output logic [PC_WIDTH-1:0] o_jump_target
+//WB to regfile inputs
+input logic [REG_DATAWIDTH-1:0] i_wb_rd_data,
+input logic i_wb_wenable,
+input logic [REG_WIDTH-1:0] i_wb_rd,
+
+//External inputs for forwarding
+input logic [REG_WIDTH-1:0] i_ex_rd,
+input logic i_ex_wenable,
+input logic [REG_WIDTH-1:0] i_mem_rd, 
+input logic i_mem_wenable, 
+input logic i_ex_memread,
+
+
+output id_ex_t o_id_ex_next, 
+output logic o_jal_ctrl, 
+output logic o_jalr_ctrl,
+output logic [PC_WIDTH-1:0] o_jump_target, 
+output logic o_forward_load
+
 );
 
 localparam INSTRUCT_WIDTH = 32; 
-localparam PC_WIDTH = 32; 
-localparam REG_DATAWIDTH = 32;
 localparam IMM_WIDTH = 32;
 
 localparam ALU_CU_CTRL = 2;
@@ -50,8 +69,14 @@ logic [ALU_OP-1:0] w_ALUop;
 
 logic w_fencei;
 
+logic w_ex_rs1_ctrl;
+logic w_ex_rs2_ctrl;
+logic w_mem_rs1_ctrl; 
+logic w_mem_rs2_ctrl; 
+
 //jumps output ports, connect via top module
 assign o_jal_ctrl = w_jal_ctrl; 
+assign o_jalr_ctrl = w_jalr_ctrl;
 assign o_jump_target = w_jump_target;
 assign o_id_ex_next.jalr_ctrl = w_jalr_ctrl;
 
@@ -90,6 +115,12 @@ assign o_id_ex_next.immext = w_immext;
 //jump_target_wiring connection wire
 assign o_id_ex_next.jump_target = w_jump_target;
 
+//Forwarding --> ALUsrc wiring (ctrl signals for muxes)
+assign o_id_ex_next.ex_rs1_ctrl = w_ex_rs1_ctrl;
+assign o_id_ex_next.ex_rs2_ctrl = w_ex_rs2_ctrl;
+assign o_id_ex_next.mem_rs1_ctrl = w_mem_rs1_ctrl;
+assign o_id_ex_next.mem_rs2_ctrl = w_mem_rs2_ctrl;
+
 
 riscv_decoder decoder_wiring (
 .i_instruct(w_instruct),
@@ -108,6 +139,10 @@ riscv_decoder decoder_wiring (
 ); 
 
 riscv_regfile regfile_wiring (
+.i_clk(i_clk),
+.i_din(i_wb_rd_data),
+.i_rd(i_wb_rd),
+.i_wenable(i_wb_wenable),
 .i_instruct(w_instruct), 
 .o_rs1_data(w_rs1_data), 
 .o_rs2_data(w_rs2_data)
@@ -132,6 +167,22 @@ riscv_ALU_cu ALU_cu_wiring (
 .i_func7(w_func7), 
 .o_ALUop(w_ALUop)
 );
+
+riscv_forwarding forwarding_wiring (
+.i_ex_rd(i_ex_rd), 
+.i_ex_wenable(i_ex_wenable), 
+.i_mem_rd(i_mem_rd), 
+.i_mem_wenable(i_mem_wenable), 
+.i_id_instruct(w_instruct),
+.i_ex_memread(i_ex_memread), 
+.o_ex_rs1_ctrl(w_ex_rs1_ctrl), 
+.o_ex_rs2_ctrl(w_ex_rs2_ctrl), 
+.o_mem_rs1_ctrl(w_mem_rs1_ctrl), 
+.o_mem_rs2_ctrl(w_mem_rs2_ctrl), 
+.o_forward_load(o_forward_load)
+
+);
+
 
 endmodule
 
