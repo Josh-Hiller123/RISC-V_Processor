@@ -1,11 +1,11 @@
 module riscv_pc #(
 parameter PC_WIDTH = 32,
-parameter PC_INITIAL = 0
+parameter PC_INITIAL = 32'b0
 )(
 input logic i_clk,
 input logic i_nrst,
 input logic [PC_WIDTH-1:0] i_id_jump_target,
-input logic [PC_WIDTH-1:0] i_ex_jump_target,
+input logic [PC_WIDTH-1:0] i_mem_jump_target,
 input logic [PC_WIDTH-1:0] i_ALU,
 input logic [PC_WIDTH-1:0] i_dcache_pc_add_four,
 input logic i_dobranch, 
@@ -57,7 +57,7 @@ begin
     else if (i_dobranch || i_jalr_ctrl)
     case({i_dobranch, i_jalr_ctrl})
     JALR: w_pc_next = i_ALU & ~32'b1; 
-    BRANCH: w_pc_next = i_ex_jump_target;
+    BRANCH: w_pc_next = i_mem_jump_target;
     default: w_pc_next = 'x;
     endcase
 

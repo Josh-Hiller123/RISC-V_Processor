@@ -22,6 +22,15 @@ logic [ALU_OUT-1:0] alu;
 
 logic fencei;
 
+logic jalr_ctrl; 
+logic dobranch;
+
+`ifdef RVFI 
+    logic valid_instruct;
+    logic [PC_WIDTH-1:0] pc; 
+    logic [REG_DATAWIDTH-1:0] instruct; 
+`endif
+
 } ex_mem_t;
 
 endpackage

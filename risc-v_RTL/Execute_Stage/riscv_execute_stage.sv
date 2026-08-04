@@ -13,10 +13,6 @@ input logic [REG_DATAWIDTH-1:0] i_mem_forward_data,
 input logic [REG_DATAWIDTH-1:0] i_wb_forward_data, 
 
 output ex_mem_t o_ex_mem_next, 
-output logic o_dobranch, 
-output logic [ALU_OUT-1:0] o_ALU, 
-output logic o_jalr_ctrl, 
-output logic [PC_WIDTH-1:0] o_ex_jump_target,
 
 output logic [REG_WIDTH-1:0] o_ex_rd, 
 output logic o_ex_wenable, 
@@ -49,11 +45,14 @@ logic w_mem_rs2_ctrl;
 logic [REG_DATAWIDTH-1:0] w_ALU_rs1;
 logic [REG_DATAWIDTH-1:0] w_ALU_rs2;
 
-
+logic w_jalr_ctrl; 
+logic w_dobranch;
  
-//jalr_ctrl/jump_target wiring connection 
-assign o_jalr_ctrl = i_id_ex.jalr_ctrl;
-assign o_ex_jump_target = i_id_ex.jump_target;
+//jalr_ctrl/jump_target/branch wiring connection 
+assign w_jalr_ctrl = i_id_ex.jalr_ctrl;
+
+assign o_ex_mem_next.jalr_ctrl = w_jalr_ctrl; 
+assign o_ex_mem_next.dobranch = w_dobranch; 
 
 //i_id_ex wiring connections (from previous reg carrying on to mem)
 assign o_ex_mem_next.pc_add_four = i_id_ex.pc_add_four;
@@ -76,7 +75,6 @@ assign w_ALUsrc_ctrl = i_id_ex.ALUsrc_ctrl;
 assign w_rs1_data = i_id_ex.rs1_data;
 assign w_ALUop = i_id_ex.ALUop; 
 assign o_ex_mem_next.alu = w_ALU;
-assign o_ALU = w_ALU;
 
 //brancheval wiring connections 
 assign w_func3 = i_id_ex.func3;
@@ -112,7 +110,7 @@ riscv_brancheval brancheval_wiring (
 .i_func3(w_func3), 
 .i_zero(w_zero), 
 .i_branch_ctrl(w_branch_ctrl), 
-.o_dobranch(o_dobranch)
+.o_dobranch(w_dobranch)
 );
 
 riscv_ALU_rs1 ALU_rs1_wiring (
@@ -133,9 +131,11 @@ riscv_ALU_rs2 ALU_rs2_wiring (
 .o_ALU_rs2(w_ALU_rs2)
 );
 
-
-
-
+`ifdef RVFI 
+assign o_ex_mem_next.valid_instruct = i_id_ex.valid_instruct;
+assign o_ex_mem_next.pc = i_id_ex.pc;
+assign o_ex_mem_next.instruct = i_id_ex.instruct;
+`endif
 
 endmodule
 

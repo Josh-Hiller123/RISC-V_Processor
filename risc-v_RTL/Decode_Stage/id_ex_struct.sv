@@ -40,6 +40,11 @@ logic ex_rs2_ctrl;
 logic mem_rs1_ctrl;
 logic mem_rs2_ctrl;
 
+`ifdef RVFI 
+    logic valid_instruct;
+    logic [PC_WIDTH-1:0] pc; 
+    logic [REG_DATAWIDTH-1:0] instruct; 
+`endif
 
 } id_ex_t; 
 endpackage

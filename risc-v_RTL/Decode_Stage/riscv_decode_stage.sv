@@ -183,6 +183,11 @@ riscv_forwarding forwarding_wiring (
 
 );
 
+`ifdef RVFI 
+assign o_id_ex_next.valid_instruct = i_if_id.valid_instruct;
+assign o_id_ex_next.pc = i_if_id.pc;
+assign o_id_ex_next.instruct = i_if_id.instruct;
+`endif
 
 endmodule
 

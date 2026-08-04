@@ -3,6 +3,7 @@ module riscv_ex_mem_reg #()(
 input logic i_clk,
 input logic i_nrst,
 input logic i_stall_ex_mem,
+input logic i_flush_ex_mem,
 
 input ex_mem_t i_ex_mem_next,
 output ex_mem_t o_ex_mem
@@ -15,6 +16,9 @@ begin
     
     else if(i_stall_ex_mem)
         o_ex_mem <= o_ex_mem;
+    
+    else if(i_flush_ex_mem)
+        o_ex_mem <= '0;
     else
         o_ex_mem <= i_ex_mem_next;
 end
