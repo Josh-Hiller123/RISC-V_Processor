@@ -14,8 +14,8 @@ This core includes:
 In the sections below, I will cover each of the 5 stages (Fetch/Decode/Execute/Memory/Writeback) of the processor and highlight significant features and design decisions. 
 
 ### Fetch
-- The [instruction cache](risc-v_RTL/Fetch_Stage/riscv_icache.sv) is parameterizable in several ways. It has N-set associativity, N index bits, and N word bits. Index bits determine how big the instruction cache is, while word bits determine how many instructions the cache fetches from the main memory at a time. The only caveat is that the top module passes the same word bits parameter to the instruction cache and data cache, as they have to match so that main memory only requires one-sized write port and infers BRAM.
-- The instruction cache includes an LRU eviction policy through an LRU matrix, so that instructions that were recently used, i.e. a looped branched sequence, stay in the cache while less-recently used instructions are evicted first. This decreases the amount of instruction cache misses for most programs, especially those with loops.
+- The [instruction cache](risc-v_RTL/Fetch_Stage/riscv_icache.sv) is parameterizable in several ways. It has **N-set associativity**, **N index bits**, and **N word bits.** Index bits determine how big the instruction cache is, while word bits determine how many instructions the cache fetches from the main memory at a time. The only caveat is that the top module passes the same word bits parameter to the instruction cache and data cache, as they have to match so that main memory only requires one-sized write port and infers BRAM.
+- The instruction cache includes an **LRU eviction policy** through an LRU matrix, so that instructions that were recently used, i.e. a looped branched sequence, stay in the cache while less-recently used instructions are evicted first. This decreases the amount of instruction cache misses for most programs, especially those with loops.
 - [PC](risc-v_RTL/Fetch_Stage/riscv_pc.sv) is fairly standard, as are the rest of the modules in fetch.
 
 ### Decode 
@@ -29,26 +29,26 @@ In the sections below, I will cover each of the 5 stages (Fetch/Decode/Execute/M
 - It also features the [main ALU unit](risc-v_RTL/Execute_Stage/riscv_ALU.sv) to perform arithmetic, which feeds the [branch evaluator](risc-v_RTL/Execute_Stage/riscv_brancheval.sv) to determine if branches are taken or not.
 
 ### Memory 
-- The [data cache](risc-v_RTL/Memory_Stage/riscv_dcache.sv), similar to the instruction cache, has parameterizable N-set associativity, N index bits, N word bits, and LRU eviction. However, it also features write-back/write-allocate policies, so that every store doesn't result in a lengthy main memory access. This is a huge plus for nearly all programs, however, it comes with the downside of a fence.i penalty. Fence.i, rather than having already written back all dirty entries, has to scan all dirty bits for each entry and send them back to the main memory, one by one.
+- The [data cache](risc-v_RTL/Memory_Stage/riscv_dcache.sv), similar to the instruction cache, has parameterizable N-set associativity, N index bits, N word bits, and LRU eviction. However, it also features **write-back/write-allocate policies**, so that every store doesn't result in a lengthy main memory access. This is a huge plus for nearly all programs, however, it comes with the downside of a fence.i penalty. Fence.i, rather than having already written back all dirty entries, has to scan all dirty bits for each entry and send them back to the main memory, one by one.
 - The [forwarding unit](risc-v_RTL/Memory_Stage/riscv_mem_forward.sv) in the memory stage is a dual-purpose module. It muxes every writeback value other than loads to be forwarded to the source muxes in execute. It also acts as a way to split the writeback mux logic, as the result of this is sent to writeback, and feeds a mux with loaded data to be sent to the register file.
 
 ### Writeback
 - This is the simplest stage, we just send our data to the register file in decode and the forwarding muxes in execute.
 
 ## Verification 
-This core was verified through a UVM testbench that runs in lockstep with the Spike ISA Simulator. For every valid retired instruction in writeback, Spike's commit log signals (pc, instruction, memory address, memory data, destination register, writeback data) are compared with those of the corresponding retired instruction, where UVM flags an error if any signals between Spike and the core aren't equal. This error marks the exact pc where the signals diverged or, if the pc diverged, it reports the order of the instruction. 
+This core was verified through a **UVM testbench** that runs in lockstep with the **Spike ISA Simulator**. For every valid retired instruction in writeback, Spike's commit log signals (pc, instruction, memory address, memory data, destination register, writeback data) are compared with those of the corresponding retired instruction, where UVM flags an error if any signals between Spike and the core aren't equal. This error marks the exact pc where the signals diverged or, if the pc diverged, it reports the order of the instruction. 
 
 <img width="386" height="365" alt="Screenshot 2026-08-04 161936" src="https://github.com/user-attachments/assets/bbd112ef-60d2-47bb-aad9-47bc06e46b9b" />
 <img width="329" height="224" alt="Screenshot 2026-08-04 162003" src="https://github.com/user-attachments/assets/a2f697e9-b1e0-4a04-852f-955efcbb1836" />
 
 ### UVM Verification Parts
 All UVM components can be found in the [testbench package](risc-v_RTL/Testbench/tb_package.sv). These include: 
-- The RVFI item that carries all the signals needed for the RVFI comparison
-- The spike reference model that stores all of Spike's commit log signals in a queue ([$] data type)
-- Monitor/agent components that get the core's RVFI signals
-- A scoreboard component that compares the RVFI signals between the core and Spike
-- A env component that builds/connects all components
-- A program loader component that clears memory and loads the program into the main memory
+- The **RVFI item** that carries all the signals needed for the RVFI comparison
+- The **spike reference model** that stores all of Spike's commit log signals in a queue ([$] data type)
+- **Monitor/agent** components that get the core's RVFI signals
+- A **scoreboard** component that compares the RVFI signals between the core and Spike
+- A **env** component that builds/connects all components
+- A **program loader** component that clears memory and loads the program into the main memory
 - A test that builds the env and program loader, then runs the testbench
 
 ### Tests 
@@ -56,10 +56,10 @@ All UVM components can be found in the [testbench package](risc-v_RTL/Testbench/
 **Result: 41/41 pass, 0 mismatches**
 
 2. Constrained-random tests: I wrote a SystemVerilog [constrained-random generator](risc-v_RTL/Testbench/tb_rand_package.sv) that generates legal RV32I assembly under constraints that stress the core while preventing out-of-control programs (i.e. random jumps, infinite loops) 
-- a small register pool (0-6) to force dependency density → exercises forwarding and load-use stalls;
-- loads/stores confined to an aligned data window via a reserved base register
-- forward-only, bounded branches/jumps so every program terminates
-- a weighted instruction mix biased toward loads/stores/branches
+- a **small register pool** (0-6) to force dependency density → exercises forwarding and load-use stalls;
+- loads/stores confined to an **aligned data window** via a reserved base register
+- **forward-only, bounded branches/jumps** so every program terminates
+- a **weighted instruction mix** biased toward loads/stores/branches
 - an initialization sequence at the start of each program so the core and Spike start from identical state
 - Every program is seeded, so any failure replays deterministically from its seed.
 **Result: 400 programs × ~1000 instructions ≈ 0.4M instructions, 0 mismatches.**
