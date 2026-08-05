@@ -1,7 +1,8 @@
 # RISC-V_Processor
 I built a 5-stage pipelined RISC-V Processor (32-bit) in SystemVerilog that supports the full RISC-V base integer ISA and Zifencei extension. This core was verified against the Spike ISA Simulator on the full rv32ui suite and 400+ constrained-random programs (0.4M instructions, 0 mismatches). Fmax = ~133 MHz targeting an Artix-7, measured in Vivado.
 
-<img width="947" height="287" alt="Screenshot 2026-08-05 153247" src="https://github.com/user-attachments/assets/35d92b9d-743a-4738-ac71-60964e337e00" />
+<img width="343" height="108" alt="Screenshot 2026-08-05 155513" src="https://github.com/user-attachments/assets/da9e289f-5478-4811-9631-20642d550b56" />
+<img width="911" height="139" alt="Screenshot 2026-08-05 155500" src="https://github.com/user-attachments/assets/175b155b-a995-485a-a447-39d1f9be5b5d" />
 <img width="470" height="224" alt="Screenshot 2026-08-05 152457" src="https://github.com/user-attachments/assets/3428bc67-bdd1-4e3a-8140-7f3cda8e1df6" />
 
 ## Features
