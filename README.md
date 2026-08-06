@@ -45,6 +45,9 @@ This core was verified through a **UVM testbench** that runs in lockstep with th
 <img width="386" height="365" alt="Screenshot 2026-08-04 161936" src="https://github.com/user-attachments/assets/bbd112ef-60d2-47bb-aad9-47bc06e46b9b" />
 <img width="329" height="224" alt="Screenshot 2026-08-04 162003" src="https://github.com/user-attachments/assets/a2f697e9-b1e0-4a04-852f-955efcbb1836" />
 
+<img width="277" height="389" alt="Screenshot 2026-08-06 103311" src="https://github.com/user-attachments/assets/67d99952-541b-490f-8f8b-f3b4b46ac411" />
+
+
 ### UVM Verification Parts
 All UVM components can be found in the [testbench package](risc-v_RTL/Testbench/tb_package.sv). These include: 
 - The **RVFI item** that carries all the signals needed for the RVFI comparison
