@@ -2,6 +2,7 @@
 # Convert a flat binary (objcopy -O binary) into the 128-bit hex rows main_mem expects:
 # 1024 rows, 32 hex chars each = 4 words/row, word 0 rightmost
 # usage: python3 bin2hex.py <in.bin> <out.hex> [depth] [width_bytes]
+import sys
 
 inp, outp = sys.argv[1], sys.argv[2]
 depth = int(sys.argv[3]) if len(sys.argv) > 3 else 1024
