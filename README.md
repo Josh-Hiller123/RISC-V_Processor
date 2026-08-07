@@ -77,23 +77,23 @@ Prerequisites: In a Linux/WSL environment, ensure you have Python 3, the RISC-V 
 
 1) Directed rv32ui suite
 - Clone the rv32ui tests in git:
-**git clone https://github.com/riscv-software-src/riscv-tests ~/riscv-tests**
+```git clone https://github.com/riscv-software-src/riscv-tests ~/riscv-tests```
 
 - Build the tests in WSL/Linux:
-**bash risc-v_RTL/Testbench/programs/build_suite.sh**
+```bash risc-v_RTL/Testbench/programs/build_suite.sh```
 
 - Run the 41-program suite in Questa:
-**do risc-v_RTL/Testbench/sim/run_suite.do**
+```do risc-v_RTL/Testbench/sim/run_suite.do```
 
 2) Constrained-random tests
 - Generate the randomized tests in Questa (edit this file if you want to change the amount generated, the 400 programs in the file takes a long time):
-**do risc-v_RTL/Testbench/sim/gen_randoms.do**
+```do risc-v_RTL/Testbench/sim/gen_randoms.do```
 
 - Build the tests in WSL/Linux:
-**bash risc-v_RTL/Testbench/programs/build_randoms.sh**
+```bash risc-v_RTL/Testbench/programs/build_randoms.sh```
 
 - Run the 400 constrained-random programs in Questa:
-**do risc-v_RTL/Testbench/sim/run_randoms.do**
+```do risc-v_RTL/Testbench/sim/run_randoms.do```
 
 
 
