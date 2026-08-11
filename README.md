@@ -15,7 +15,7 @@ This core includes:
 - UVM verification in lockstep with the Spike ISA Simulator 
 
 ## Stage-by-Stage Analysis
-In the sections below, I will cover each of the 5 stages (Fetch/Decode/Execute/Memory/Writeback) of the processor and highlight significant features and design decisions. This analysis covers the differentiating design decisions of my processor, and does not address features that are required of the RISC-V architecture. I recommend that you view the RTL for a full overview of the project, organized by stage. 
+In the sections below, I will cover each of the 5 stages (Fetch/Decode/Execute/Memory/Writeback) of the processor and highlight significant features and design decisions. This analysis mainly covers the differentiating design decisions of my processor, and does not address most standard features that are required of the RISC-V architecture. I recommend that you view the RTL for a full overview of the project, organized by stage. 
 
 ### Fetch
 - The [instruction cache](risc-v_RTL/Fetch_Stage/riscv_icache.sv) is parameterizable in several ways. It has **N-set associativity**, **N index bits**, and **N word bits.** Index bits determine how big the instruction cache is, while word bits determine how many instructions the cache fetches from the main memory at a time. The only caveat is that the top module passes the same word bits parameter to the instruction cache and data cache, as they have to match so that main memory only requires one-sized write port and infers BRAM.
