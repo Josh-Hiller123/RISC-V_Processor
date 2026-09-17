@@ -87,14 +87,14 @@ int seed;
 instruct_generate program_body[$]; 
 logic [31:0] reg_initialized [6:0]; //6 through 0, matches registers used in instruct_generate class
 
-function new(int seed); // QUESTION: whats the point of this function? in uvm we use function new so that the class can be called on by other classes right? if thats the case, why do we have it here? why doesnt class instruct_generate need it? clear up my confusion on this topic
+function new(int seed); 
 this.seed = seed;
 endfunction
 
 function void program_write(); 
-process::self().srandom(seed); //QUESTION: what is this doing? Walk me through exactly why we use the seed and how it functions in this program
+process::self().srandom(seed); 
 
-for(int r = 1; r <= 5; r++) reg_initialized[r] = $urandom(); //QUESTION: shouldnt we initialize registers to 0? doesnt spike automatically set registers to 0, so we should set them to 0 here as well no? 
+for(int r = 1; r <= 5; r++) reg_initialized[r] = $urandom();
 
 for(int i = 0; i < INSTRUCT_AMT; i++)
 begin
@@ -137,7 +137,7 @@ begin
 end
 
 //write 1 tohost, simulation environment set-up
-$fdisplay(file, "END:"); //QUESTION: I dont understand what any of this is doing from here to the end of the package, explain line by line.
+$fdisplay(file, "END:"); 
 $fdisplay(file, "li a0, 1");
 $fdisplay(file, "la a1, tohost");
 $fdisplay(file, "sw a0, 0(a1)");
