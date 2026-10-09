@@ -8,7 +8,7 @@ I built a 5-stage pipelined RISC-V Processor (32-bit) in SystemVerilog that supp
 ## Features
 This core includes: 
 - 32-bit RISC-V CPU core
-- Parameterizable N-set associative I/D cache subsystems
+- Parameterizable N-way set associative I/D cache subsystems (set to 3-way set associative for synthesis)
 - Full hazard handling
 - Supports all RV32I base integer instructions
 - Supports self-modifying code through implementing the Zifencei extension
@@ -18,7 +18,7 @@ This core includes:
 In the sections below, I will cover each of the 5 stages (Fetch/Decode/Execute/Memory/Writeback) of the processor and highlight significant features and design decisions. This analysis mainly covers the differentiating design decisions of my processor, and does not address most standard features that are required of the RISC-V architecture. I recommend that you view the RTL for a full overview of the project, organized by stage. 
 
 ### Fetch
-- The [instruction cache](risc-v_RTL/Fetch_Stage/riscv_icache.sv) is parameterizable in several ways. It has **N-set associativity**, **N index bits**, and **N word bits.** Index bits determine how big the instruction cache is, while word bits determine how many instructions the cache fetches from the main memory at a time. The only caveat is that the top module passes the same word bits parameter to the instruction cache and data cache, as they have to match so that main memory only requires one-sized write port and infers BRAM.
+- The [instruction cache](risc-v_RTL/Fetch_Stage/riscv_icache.sv) is parameterizable in several ways. It has **N-way set associativity**, **N index bits**, and **N word bits.** Index bits determine how big the instruction cache is, while word bits determine how many instructions the cache fetches from the main memory at a time. The only caveat is that the top module passes the same word bits parameter to the instruction cache and data cache, as they have to match so that main memory only requires one-sized write port and infers BRAM.
 - The instruction cache includes an **LRU eviction policy** through an LRU matrix, so that instructions that were recently used, i.e. a looped branched sequence, stay in the cache while less-recently used instructions are evicted first. This decreases the amount of instruction cache misses for most programs, especially those with loops.
 - [PC](risc-v_RTL/Fetch_Stage/riscv_pc.sv) is fairly standard, as are the rest of the modules in fetch.
 
